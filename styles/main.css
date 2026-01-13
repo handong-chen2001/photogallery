@@ -49,8 +49,8 @@
     --transition-slow: 0.5s ease;
     
     /* Border Radius */
-    --radius-sm: 20px;
-    --radius-md: 25px;
+    --radius-sm: 10px;
+    --radius-md: 15px;
     --radius-lg: 30px;
     --radius-full: 50%;
 }
@@ -478,8 +478,9 @@ p {
 }
 
 .gallery-grid {
-    display: block;
-    position: relative;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--spacing-md);
     padding: var(--spacing-sm) 0;
     margin: 0 auto;
     max-width: 1400px;
@@ -524,6 +525,17 @@ p {
     display: block;
     box-sizing: border-box;
     background-color: var(--light-color);
+}
+
+/* Special handling for portrait images to ensure proper cropping */
+.gallery-grid .gallery-item[data-orientation="portrait"] .gallery-image {
+    /* Ensure image fills container */
+    width: 100%;
+    height: 100%;
+    /* Maintain aspect ratio while filling container */
+    object-fit: cover !important;
+    /* Focus on the center of the image, effectively cropping from top */
+    object-position: center 70% !important;
 }
 
 
@@ -973,7 +985,7 @@ p {
     
     /* Gallery */
     .gallery-grid {
-        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+        grid-template-columns: repeat(2, 1fr);
         gap: var(--spacing-sm);
     }
     

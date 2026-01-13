@@ -253,15 +253,12 @@ document.addEventListener('DOMContentLoaded', function() {
         return width > height ? 'landscape' : 'portrait';
     }
     
-    // Check if CSS Masonry is supported
-    function isCssMasonrySupported() {
-        // More reliable CSS Masonry support detection
+    // Check if CSS Grid is supported
+    function isCssGridSupported() {
         try {
             const testElement = document.createElement('div');
-            // Try to set and get the masonry value
             testElement.style.display = 'grid';
-            testElement.style.gridTemplateRows = 'masonry';
-            return testElement.style.gridTemplateRows === 'masonry';
+            return testElement.style.display === 'grid';
         } catch (e) {
             return false;
         }
@@ -269,8 +266,18 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // JavaScript-based Masonry Layout Fallback
     function applyMasonryLayout() {
-        // Only apply JS masonry if CSS masonry is not supported
-        if (isCssMasonrySupported()) return;
+        // Apply special handling for portrait images regardless of CSS Grid support
+        const galleryItems = document.querySelectorAll('.gallery-item');
+        galleryItems.forEach(item => {
+            const img = item.querySelector('.gallery-image');
+            if (img && item.dataset.orientation === 'portrait') {
+                // For portrait images, reduce height to create cropping effect
+                item.style.height = `${item.offsetWidth * 1.8}px`;
+            }
+        });
+        
+        // Only apply JS masonry if CSS Grid is not supported
+        if (isCssGridSupported()) return;
         
         const galleryGrid = document.querySelector('.gallery-grid');
         if (!galleryGrid) return;
@@ -303,7 +310,7 @@ document.addEventListener('DOMContentLoaded', function() {
             baseItemWidth = parseInt(minmaxMatch[1]);
         } else {
             // Fallback: calculate base width based on container and typical column count
-            baseItemWidth = Math.floor(containerWidth / 3); // Start with 3 columns as base
+            baseItemWidth = Math.floor(containerWidth / 3); // Use 3 columns as base for better layout
         }
         
         // Ensure base width is at least a reasonable minimum
@@ -343,7 +350,14 @@ document.addEventListener('DOMContentLoaded', function() {
             // If image is not loaded yet, use natural dimensions if available
             if (img && img.complete) {
                 // Calculate height based on natural aspect ratio
-                itemHeight = img.naturalHeight / img.naturalWidth * itemWidth;
+                const orientation = getImageOrientation(img.naturalWidth, img.naturalHeight);
+                if (orientation === 'portrait') {
+                    // For portrait images, reduce height to create cropping effect
+                    itemHeight = img.naturalHeight / img.naturalWidth * itemWidth * 0.7; // Reduce height by 30% for cropping
+                } else {
+                    // For landscape images, use full height
+                    itemHeight = img.naturalHeight / img.naturalWidth * itemWidth;
+                }
             } else {
                 // Fallback height
                 itemHeight = itemWidth * 0.75; // 4:3 aspect ratio fallback
@@ -401,12 +415,13 @@ document.addEventListener('DOMContentLoaded', function() {
         // Clear existing gallery items
         galleryGrid.innerHTML = '';
         
-        // Reset all grid styles for JS masonry
+        // Reset only necessary styles for JS masonry
         galleryGrid.style.position = '';
         galleryGrid.style.height = '';
-        galleryGrid.style.display = '';
-        galleryGrid.style.gridTemplateColumns = '';
-        galleryGrid.style.gap = '';
+        // Preserve CSS grid styles
+        // galleryGrid.style.display = '';
+        // galleryGrid.style.gridTemplateColumns = '';
+        // galleryGrid.style.gap = '';
         galleryGrid.style.gridAutoRows = '';
         galleryGrid.style.gridTemplateRows = '';
         galleryGrid.style.alignItems = '';
@@ -437,6 +452,13 @@ document.addEventListener('DOMContentLoaded', function() {
                 img.addEventListener('load', function() {
                     const orientation = getImageOrientation(this.naturalWidth, this.naturalHeight);
                     galleryItem.dataset.orientation = orientation;
+                    
+                    // Add specific styles for portrait images
+                    if (orientation === 'portrait') {
+                        this.style.objectFit = 'cover';
+                        this.style.objectPosition = 'center 25%';
+                    }
+                    
                     imagesLoaded++;
                     checkIfAllImagesLoaded();
                 });
