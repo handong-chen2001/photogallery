@@ -1,13 +1,17 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Heated Rivalry Photography Gallery</title>
-    <link rel="stylesheet" href="styles/main.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-</head>
-<body>
+    <link rel="stylesheet" href="styles/main.css" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+
+  <body>
     <!-- Navigation -->
     <!-- <nav class="navbar">
         <div class="container">
@@ -24,149 +28,219 @@
 
     <!-- Hero Section -->
     <section class="hero">
-        <div class="hero-slide active">
-            <div class="hero-image"></div>
-            <div class="hero-content">
-                <h1 class="hero-title">Heated Rivalry</h1>
-                <p class="hero-subtitle">I'll Believe in Anything</p>
-            </div>
+      <div class="hero-slide active">
+        <div class="hero-image"></div>
+        <div class="hero-content">
+          <h1 class="hero-title">Heated Rivalry</h1>
+          <p class="hero-subtitle">I'll Believe in Anything</p>
         </div>
-        <div class="hero-slide">
-            <div class="hero-image"></div>
-            <div class="hero-content">
-                <h1 class="hero-title">Heated Rivalry</h1>
-                <p class="hero-subtitle">You Deserve Sunshine</p> 
-            </div>
+      </div>
+      <div class="hero-slide">
+        <div class="hero-image"></div>
+        <div class="hero-content">
+          <h1 class="hero-title">Heated Rivalry</h1>
+          <p class="hero-subtitle">You Deserve Sunshine</p>
         </div>
-        <div class="hero-slide">
-            <div class="hero-image"></div>
-            <div class="hero-content">
-                <h1 class="hero-title">Heated Rivalry</h1>
-                <p class="hero-subtitle">We Didn't Even Kiss</p> 
-            </div>
+      </div>
+      <div class="hero-slide">
+        <div class="hero-image"></div>
+        <div class="hero-content">
+          <h1 class="hero-title">Heated Rivalry</h1>
+          <p class="hero-subtitle">We Didn't Even Kiss</p>
         </div>
-        <div class="hero-slide">
-            <div class="hero-image"></div>
-            <div class="hero-content">
-                <h1 class="hero-title">Heated Rivalry</h1>
-                <p class="hero-subtitle">I Love You So Much</p>
-            </div>
+      </div>
+      <div class="hero-slide">
+        <div class="hero-image"></div>
+        <div class="hero-content">
+          <h1 class="hero-title">Heated Rivalry</h1>
+          <p class="hero-subtitle">I Love You So Much</p>
         </div>
-        <div class="hero-slide">
-            <div class="hero-image"></div>
-            <div class="hero-content">
-                <h1 class="hero-title">Heated Rivalry</h1>
-                <p class="hero-subtitle">Wish You Were Here</p>
-            </div>
+      </div>
+      <div class="hero-slide">
+        <div class="hero-image"></div>
+        <div class="hero-content">
+          <h1 class="hero-title">Heated Rivalry</h1>
+          <p class="hero-subtitle">Wish You Were Here</p>
         </div>
-        <div class="hero-controls">
-            <button class="hero-btn prev" aria-label="Previous slide">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <polyline points="15 18 9 12 15 6"></polyline>
-                </svg>
-            </button>
-            <button class="hero-btn next" aria-label="Next slide">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <polyline points="9 18 15 12 9 6"></polyline>
-                </svg>
-            </button>
-        </div>
-        <div class="hero-indicators">
-            <span class="indicator active" data-index="0"></span>
-            <span class="indicator" data-index="1"></span>
-            <span class="indicator" data-index="2"></span>
-            <span class="indicator" data-index="3"></span>
-            <span class="indicator" data-index="4"></span>
-        </div>
+      </div>
+      <div class="hero-controls">
+        <button class="hero-btn prev" aria-label="Previous slide">
+          <svg
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <polyline points="15 18 9 12 15 6"></polyline>
+          </svg>
+        </button>
+        <button class="hero-btn next" aria-label="Next slide">
+          <svg
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <polyline points="9 18 15 12 9 6"></polyline>
+          </svg>
+        </button>
+      </div>
+      <div class="hero-indicators">
+        <span class="indicator active" data-index="0"></span>
+        <span class="indicator" data-index="1"></span>
+        <span class="indicator" data-index="2"></span>
+        <span class="indicator" data-index="3"></span>
+        <span class="indicator" data-index="4"></span>
+      </div>
     </section>
 
     <!-- Gallery Section -->
     <section class="gallery">
-        <div class="container">
-            <div class="gallery-filters">
-                <button class="filter-btn active" data-filter="all">All</button>
-                <button class="filter-btn" data-filter="still">Still</button>
-                <button class="filter-btn" data-filter="wallpaper">Wallpaper</button>
-            </div>
-            
-            <div class="gallery-orientation">
-                <label>Orientation:</label>
-                <div class="orientation-buttons">
-                    <button class="orientation-btn active" data-orientation="all">All</button>
-                    <button class="orientation-btn" data-orientation="landscape">Landscape</button>
-                    <button class="orientation-btn" data-orientation="portrait">Portrait</button>
-                </div>
-            </div>
-            
-            <div class="gallery-grid">
-                <!-- Gallery items will be dynamically generated by JavaScript -->
-            </div>
+      <div class="container">
+        <div class="gallery-filters">
+          <button class="filter-btn active" data-filter="all">All</button>
+          <button class="filter-btn" data-filter="still">Still</button>
+          <button class="filter-btn" data-filter="wallpaper">Wallpaper</button>
         </div>
+
+        <div class="gallery-orientation">
+          <label>Orientation:</label>
+          <div class="orientation-buttons">
+            <button class="orientation-btn active" data-orientation="all">
+              All
+            </button>
+            <button class="orientation-btn" data-orientation="landscape">
+              Landscape
+            </button>
+            <button class="orientation-btn" data-orientation="portrait">
+              Portrait
+            </button>
+          </div>
+        </div>
+
+        <div class="gallery-grid">
+          <!-- Gallery items will be dynamically generated by JavaScript -->
+        </div>
+      </div>
     </section>
 
     <!-- Footer -->
     <footer class="footer">
-        <div class="container">
-            <div class="footer-content">
-                <div class="footer-section">
-                    <h3 class="footer-title">Heated Rivalry</h3>
-                    <p class="footer-text">Curated photography gallery showcasing stunning images from around the world.</p>
-                </div>
-                <div class="footer-section">
-                    <h3 class="footer-title">Follow Me</h3>
-                    <div class="social-links">
-                        <a href="#" class="social-link" aria-label="Douyin">
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <circle cx="12" cy="12" r="10"></circle>
-                                <path d="M12 8a4 4 0 0 0-4 4v6a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1v-6a4 4 0 0 0-4-4z"></path>
-                                <path d="M8 16v-6a4 4 0 0 1 8 0v6"></path>
-                            </svg>
-                        </a>
-                        <a href="#" class="social-link" aria-label="Xiaohongshu">
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
-                                <path d="M8 12h8"></path>
-                                <path d="M12 8v8"></path>
-                                <path d="M16 12a4 4 0 1 1-8 0 4 4 0 0 1 8 0z"></path>
-                            </svg>
-                        </a>
-                    </div>
-                </div>
+      <div class="container">
+        <div class="footer-content">
+          <div class="footer-section">
+            <h3 class="footer-title"><em>Heated Rivalry</em></h3>
+            <p class="footer-text">
+              This site is created by <em>Heated Rivalry</em> fans. All images
+              are shared for free, and the image copyright belongs to the
+              <em>Heated Rivalry</em> TV series production team.
+            </p>
+          </div>
+          <div class="footer-section">
+            <h3 class="footer-title">Follow Me</h3>
+            <div class="social-links">
+              <a href="https://v.douyin.com/sYt2NG0N6nA/" target="_blank" rel="noopener noreferrer" class="social-link" aria-label="Douyin">
+                <svg
+                  width="20"
+                  height="20"
+                  viewBox="0 0 1024 1024"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="currentColor"
+                >
+                  <path
+                    d="M910.346028 170.666667A170.666667 170.666667 0 0 1 739.679362 0H569.012695v682.666667a170.666667 170.666667 0 1 1-170.666667-170.666667h56.919841V341.333333h-56.919841a341.333333 341.333333 0 1 0 341.333334 341.333334V295.277476a341.333333 341.333333 0 0 0 170.666666 46.427276h56.919841V171.038085z"
+                  ></path>
+                </svg>
+              </a>
+              <a href="https://xhslink.com/m/4OQ4fnnk4U3" target="_blank" rel="noopener noreferrer" class="social-link" aria-label="Xiaohongshu">
+                <svg
+                  width="30"
+                  height="30"
+                  viewBox="0 0 1700 1024"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="currentColor"
+                >
+                  <path
+                    d="M1556.584 666.846c-29.077 60.292-60.079 76.862-124.326 66.706-41.264-6.52-63.82-30.68-69.914-78.893 24.908 0 49.496-0.64 73.976 0.214 16.463 0.642 23.946-4.917 23.304-22.235-0.962-25.015 0.214-50.244-0.641-75.259-0.748-20.952-12.187-34.635-33.567-35.063-42.974-0.962-85.948-0.32-133.092-0.32v212.84h-95.676V523.384h-96.532v-98.349h93.86v-83.49h-62.324v-96.104c20.525-0.962 40.195-2.03 63.285-3.1V208.99h96.425c-3.741 26.832 6.735 35.491 34.636 35.919 74.083 1.176 113.101 42.867 114.491 117.27 0.428 20.418 0.107 40.836 0.107 63.286 59.865-2.78 96.745 21.914 115.988 72.692v168.69z m-264.58-329.896c0 29.397-1.176 51.312 0.748 72.906 0.534 5.559 10.797 14.432 16.57 14.432 11.652 0.107 33.032-3.742 33.46-7.911 2.458-22.342 3.42-46.395-3.207-67.348-2.245-7.269-27.474-7.376-47.571-12.08zM357.368 208.882c-0.214 146.348-0.107 292.802-0.856 439.15-0.32 62.644-39.553 96.104-98.67 86.269-38.697-6.414-59.65-32.605-61.147-78.786h64.248V208.989c32.177-0.107 64.354-0.107 96.425-0.107z m409.751 0c-23.625 47.143-50.03 93.11-66.813 137.902 39.34-2.245 74.617-4.276 116.736-6.734-22.235 44.898-42.012 84.665-61.789 124.54-2.672 5.344-5.238 10.903-7.91 16.248-20.74 41.585-20.632 41.692 25.335 42.975 4.81 0.106 9.514 0.748 18.28 1.496-12.935 25.336-24.266 48.426-36.453 71.09-2.031 3.74-7.483 8.017-11.331 8.017-33.995-0.107-68.31 1.069-102.091-2.673-24.48-2.779-33.78-21.273-24.267-44.577 11.653-28.757 25.443-56.658 38.271-84.88 4.383-9.728 8.766-19.456 15.287-33.887-18.922 0-32.605 0.427-46.288-0.107-40.623-1.39-54.092-19.456-37.416-56.337 26.405-58.368 55.91-115.453 84.025-173.073h96.424zM62.107 576.408c6.093-33.78 13.79-67.455 17.852-101.45 5.132-42.76 7.163-85.84 10.69-130.74H192.1c-17.211 115.988 3.42 238.818-72.586 345.505C99.202 654.018 80.6 621.199 62 588.381c0.107-3.849 0.107-7.91 0.107-11.973z m1494.477-271.101c-21.701 37.736-56.016 38.698-92.79 32.925-11.011-47.891-3.1-79.32 22.449-90.972 23.839-10.904 45.647-2.245 70.34 28.008v30.039z"
+                  ></path>
+                  <path
+                    d="M998.667 639.48c26.405 0 51.206 0.534 76.007-0.214 15.607-0.428 20.418 5.986 21.38 21.273 4.81 76.114 5.238 76.114-71.73 76.114H752.366c16.89-33.354 30.574-62.644 46.716-90.439 2.993-5.238 16.035-6.2 24.48-6.414 23.946-0.855 47.999-0.32 74.296-0.32V341.332h-61.468v-94.607h223.103v93.11H998.56c0.107 100.595 0.107 198.195 0.107 299.645zM425.891 343.364h95.035c4.597 58.688 2.566 117.805 15.287 173.607 14.966 65.316-8.873 115.88-39.767 167.407-46.181-40.409-71.303-161.42-70.555-341.014z m171.149 294.94h153.937c-17.21 33.673-30.787 61.147-45.646 87.98-2.78 4.917-10.904 9.62-16.677 9.727-44.898 0.748-89.797 0.428-141.323 0.428 19.563-38.805 35.598-70.341 49.709-98.135z"
+                  ></path>
+                </svg>
+              </a>
             </div>
-            
-            <div class="footer-bottom">
-                <p class="footer-copyright">&copy; All images are sourced from or adapted from screenshots of Heated Rivalry film and television productions. In case of any copyright concerns, please contact us for removal. Thanks for your understanding.</p>
-                <!-- <div class="footer-links">
+          </div>
+        </div>
+
+        <div class="footer-bottom">
+          <p class="footer-copyright">
+            &copy; All images are sourced from or adapted from screenshots of
+            <em>Heated Rivalry</em> television productions. In case of any
+            copyright concerns, please contact me for removal. Thanks for your
+            understanding.
+          </p>
+          <!-- <div class="footer-links">
                     <a href="#" class="footer-link">Terms</a>
                     <a href="#" class="footer-link">Privacy</a>
                     <a href="#" class="footer-link">Contact</a>
                 </div> -->
-            </div>
         </div>
+      </div>
     </footer>
 
     <!-- Lightbox -->
     <div class="lightbox" id="lightbox">
-        <div class="lightbox-content">
-            <button class="lightbox-close" aria-label="Close lightbox">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <line x1="18" y1="6" x2="6" y2="18"></line>
-                    <line x1="6" y1="6" x2="18" y2="18"></line>
-                </svg>
-            </button>
-            <img src="" alt="Lightbox image" class="lightbox-image" id="lightboxImage">
-            <div class="lightbox-actions">
-                <button class="lightbox-btn download-btn" aria-label="Download image">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-                        <polyline points="7 10 12 15 17 10"></polyline>
-                        <line x1="12" y1="15" x2="12" y2="3"></line>
-                    </svg>
-                </button>
-            </div>
+      <div class="lightbox-content">
+        <button class="lightbox-close" aria-label="Close lightbox">
+          <svg
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+        <img
+          src=""
+          alt="Lightbox image"
+          class="lightbox-image"
+          id="lightboxImage"
+        />
+        <div class="lightbox-actions">
+          <button class="lightbox-btn download-btn" aria-label="Download image">
+            <svg
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+              <polyline points="7 10 12 15 17 10"></polyline>
+              <line x1="12" y1="15" x2="12" y2="3"></line>
+            </svg>
+          </button>
         </div>
+      </div>
     </div>
 
     <script src="scripts/main.js"></script>
-</body>
+  </body>
 </html>

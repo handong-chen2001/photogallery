@@ -105,6 +105,12 @@ p {
     font-weight: 300;
 }
 
+em {
+    font-style: italic;
+    font-weight: 400;
+    letter-spacing: normal;
+}
+
 /* Buttons */
 .btn {
     display: inline-block;
@@ -770,6 +776,11 @@ p {
     font-size: var(--font-sm);
     font-weight: 300;
     line-height: 1.6;
+}
+
+.footer em {
+    color: var(--white-color);
+    opacity: 0.9;
 }
 
 .social-links {
