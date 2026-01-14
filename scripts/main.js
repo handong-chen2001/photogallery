@@ -991,6 +991,63 @@ document.addEventListener('DOMContentLoaded', function() {
     // Initialize notification system when DOM is loaded
     initNotification();
     
+    // Email Modal Functionality
+    const emailBtn = document.getElementById('email-btn');
+    const emailModal = document.getElementById('email-modal');
+    const emailClose = document.querySelector('.email-modal-close');
+    const emailCopyBtn = document.getElementById('email-copy-btn');
+    const emailAddress = document.getElementById('email-address');
+    
+    // Open email modal when clicking email button
+    if (emailBtn && emailModal) {
+        emailBtn.addEventListener('click', function() {
+            emailModal.classList.add('active');
+        });
+    }
+    
+    // Close email modal when clicking close button
+    if (emailClose && emailModal) {
+        emailClose.addEventListener('click', function() {
+            emailModal.classList.remove('active');
+        });
+    }
+    
+    // Close email modal when clicking outside
+    if (emailModal) {
+        emailModal.addEventListener('click', function(e) {
+            if (e.target === emailModal) {
+                emailModal.classList.remove('active');
+            }
+        });
+    }
+    
+    // Close email modal with ESC key
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape' && emailModal && emailModal.classList.contains('active')) {
+            emailModal.classList.remove('active');
+        }
+    });
+    
+    // Copy email address to clipboard
+    if (emailCopyBtn && emailAddress) {
+        emailCopyBtn.addEventListener('click', function() {
+            // Create a temporary input element
+            const tempInput = document.createElement('input');
+            tempInput.value = emailAddress.textContent;
+            document.body.appendChild(tempInput);
+            
+            // Select and copy the text
+            tempInput.select();
+            document.execCommand('copy');
+            
+            // Remove the temporary input
+            document.body.removeChild(tempInput);
+            
+            // Show notification
+            showNotification('邮箱地址已复制到剪贴板');
+        });
+    }
+    
     // Initialize
     console.log('Photo Gallery Website Initialized');
 });
