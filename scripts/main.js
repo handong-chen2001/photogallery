@@ -651,16 +651,235 @@ document.addEventListener('DOMContentLoaded', function() {
     
     function openLightbox(index) {
         currentLightboxIndex = index;
-        lightboxImg.src = lightboxImages[currentLightboxIndex];
+        
+        // Get lightbox info element
+        const lightboxInfo = document.querySelector('.lightbox-info');
+        
+        // Reset dimensions
+        lightboxImg.style.width = 'auto';
+        lightboxImg.style.height = 'auto';
+        lightboxInfo.style.width = 'auto';
+        
+        // Ensure navigation buttons are visible
+        const lightboxPrev = document.querySelector('.lightbox-prev');
+        const lightboxNext = document.querySelector('.lightbox-next');
+        
+        if (lightboxPrev) {
+            lightboxPrev.style.display = 'flex';
+            lightboxPrev.style.visibility = 'visible';
+            lightboxPrev.style.opacity = '1';
+        }
+        
+        if (lightboxNext) {
+            lightboxNext.style.display = 'flex';
+            lightboxNext.style.visibility = 'visible';
+            lightboxNext.style.opacity = '1';
+        }
+        
+        // Show lightbox immediately
         lightbox.classList.add('active');
         // Disable scrolling
         document.body.style.overflow = 'hidden';
+        
+        // Set image source and wait for it to load
+        lightboxImg.src = lightboxImages[currentLightboxIndex];
+        
+        // Wait for image to load completely
+        lightboxImg.onload = function() {
+            // Get image natural dimensions
+            const imgWidth = lightboxImg.naturalWidth;
+            const imgHeight = lightboxImg.naturalHeight;
+            
+            // Calculate aspect ratio
+            const aspectRatio = imgWidth / imgHeight;
+            
+            // Get viewport dimensions
+            const viewportWidth = window.innerWidth;
+            const viewportHeight = window.innerHeight;
+            
+            // Define padding and maximum dimensions
+            const padding = 50; // 50px padding on all sides
+            const maxWidth = viewportWidth - (padding * 2);
+            const maxHeight = viewportHeight - (padding * 2);
+            
+            let displayWidth, displayHeight;
+            
+            if (aspectRatio > 1) {
+                // Landscape image
+                // First try to fit by width
+                displayWidth = Math.min(imgWidth, maxWidth);
+                displayHeight = displayWidth / aspectRatio;
+                
+                // If height exceeds max, scale by height
+                if (displayHeight > maxHeight) {
+                    displayHeight = maxHeight;
+                    displayWidth = displayHeight * aspectRatio;
+                }
+            } else {
+                // Portrait image
+                // First try to fit by height
+                displayHeight = Math.min(imgHeight, maxHeight);
+                displayWidth = displayHeight * aspectRatio;
+                
+                // If width exceeds max, scale by width
+                if (displayWidth > maxWidth) {
+                    displayWidth = maxWidth;
+                    displayHeight = displayWidth / aspectRatio;
+                }
+            }
+            
+            // Apply calculated dimensions to lightbox image
+            lightboxImg.style.width = `${Math.floor(displayWidth)}px`;
+            lightboxImg.style.height = `${Math.floor(displayHeight)}px`;
+            
+            // Get lightbox info element
+            const lightboxInfo = document.querySelector('.lightbox-info');
+            
+            // Calculate the new width based on image orientation
+            let newWidth;
+            if (aspectRatio < 1) {
+                // Portrait image: info bar is 140% of image width
+                newWidth = Math.floor(displayWidth * 1.4);
+            } else {
+                // Landscape image: keep info bar at 80% of image width
+                newWidth = Math.floor(displayWidth * 0.8);
+            }
+            
+            // Remove any existing width and transform styles
+            lightboxInfo.removeAttribute('style');
+            
+            // Directly set the width without any animation
+            // This avoids any possible transition effects
+            lightboxInfo.style.width = `${newWidth}px`;
+            
+            // Ensure there's no transform applied
+            lightboxInfo.style.transform = 'none';
+            
+            // Ensure no transitions are applied
+            lightboxInfo.style.transition = 'none';
+            lightboxInfo.style.animation = 'none';
+            
+            // Adjust close button position and color based on image
+            adjustCloseButton();
+            
+            // Add console log for debugging
+            console.log('Image width:', displayWidth, 'px');
+            console.log('Image height:', displayHeight, 'px');
+        };
     }
+    
+    // Adjust close button position and color based on image
+    function adjustCloseButton() {
+        const lightboxClose = document.querySelector('.lightbox-close');
+        const lightboxImage = document.getElementById('lightboxImage');
+        const lightboxContent = document.querySelector('.lightbox-content');
+        
+        // Get image and container positions
+        const imageRect = lightboxImage.getBoundingClientRect();
+        const contentRect = lightboxContent.getBoundingClientRect();
+        
+        // Calculate position relative to image
+        const buttonOffset = 20;
+        const left = imageRect.width - (lightboxClose.offsetWidth + buttonOffset);
+        const top = buttonOffset;
+        
+        // Set button position
+        lightboxClose.style.position = 'absolute';
+        lightboxClose.style.top = `${top}px`;
+        lightboxClose.style.left = `${left}px`;
+        lightboxClose.style.right = 'auto';
+        lightboxClose.style.transform = 'none';
+        
+        // Create a canvas to get image pixel data
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+        
+        // Set canvas size to match image
+        canvas.width = lightboxImage.width;
+        canvas.height = lightboxImage.height;
+        
+        // Draw the image to canvas
+        ctx.drawImage(lightboxImage, 0, 0, canvas.width, canvas.height);
+        
+        // Define sample area (top-right corner)
+        const sampleSize = Math.min(50, canvas.width, canvas.height);
+        const sampleX = canvas.width - sampleSize;
+        const sampleY = 0;
+        
+        try {
+            // Get pixel data from top-right corner
+            const imageData = ctx.getImageData(sampleX, sampleY, sampleSize, sampleSize);
+            const data = imageData.data;
+            
+            // Calculate average color
+            let totalR = 0, totalG = 0, totalB = 0;
+            let pixelCount = 0;
+            
+            // Sample every 5th pixel to improve performance
+            for (let i = 0; i < data.length; i += 4 * 5) {
+                totalR += data[i];
+                totalG += data[i + 1];
+                totalB += data[i + 2];
+                pixelCount++;
+            }
+            
+            const avgR = Math.round(totalR / pixelCount);
+            const avgG = Math.round(totalG / pixelCount);
+            const avgB = Math.round(totalB / pixelCount);
+            
+            // Calculate luminance to determine contrast color
+            // Using formula: 0.299*R + 0.587*G + 0.114*B
+            const luminance = 0.299 * avgR + 0.587 * avgG + 0.114 * avgB;
+            
+            // Set button color based on luminance
+            const buttonColor = luminance > 128 ? '#000000' : '#ffffff';
+            lightboxClose.style.color = buttonColor;
+            
+            // Adjust button background opacity based on contrast
+            lightboxClose.style.backgroundColor = luminance > 128 
+                ? 'rgba(255, 255, 255, 0.2)' 
+                : 'rgba(0, 0, 0, 0.2)';
+            
+            console.log('Adjusted close button color to:', buttonColor, 'based on avg color:', avgR, avgG, avgB);
+        } catch (error) {
+            console.error('Error adjusting close button color:', error);
+            // Fallback to white
+            lightboxClose.style.color = '#ffffff';
+            lightboxClose.style.backgroundColor = 'rgba(0, 0, 0, 0.2)';
+        }
+        
+        // Clean up canvas
+        canvas.remove();
+    }
+    
+    // Adjust lightbox size when window is resized
+    window.addEventListener('resize', function() {
+        if (lightbox.classList.contains('active')) {
+            // Re-open the current image to recalculate size
+            openLightbox(currentLightboxIndex);
+        }
+    });
     
     function closeLightbox() {
         lightbox.classList.remove('active');
         // Enable scrolling
         document.body.style.overflow = 'auto';
+    }
+    
+    // Navigate to previous image
+    function previousImage() {
+        if (currentLightboxIndex > 0) {
+            currentLightboxIndex--;
+            openLightbox(currentLightboxIndex);
+        }
+    }
+    
+    // Navigate to next image
+    function nextImage() {
+        if (currentLightboxIndex < lightboxImages.length - 1) {
+            currentLightboxIndex++;
+            openLightbox(currentLightboxIndex);
+        }
     }
     
     // Simple and reliable download functionality
@@ -728,6 +947,18 @@ document.addEventListener('DOMContentLoaded', function() {
     // Event listeners for lightbox controls
     if (lightboxClose) {
         lightboxClose.addEventListener('click', closeLightbox);
+    }
+    
+    // Navigation button event listeners
+    const lightboxPrev = document.querySelector('.lightbox-prev');
+    const lightboxNext = document.querySelector('.lightbox-next');
+    
+    if (lightboxPrev) {
+        lightboxPrev.addEventListener('click', previousImage);
+    }
+    
+    if (lightboxNext) {
+        lightboxNext.addEventListener('click', nextImage);
     }
     
     // Enhanced download button event listener with debugging
@@ -1045,6 +1276,14 @@ document.addEventListener('DOMContentLoaded', function() {
             
             // Show notification
             showNotification('邮箱地址已复制到剪贴板');
+            
+            // Add copied animation
+            emailCopyBtn.classList.add('copied');
+            
+            // Restore original state after animation completes
+            setTimeout(function() {
+                emailCopyBtn.classList.remove('copied');
+            }, 600);
         });
     }
     

@@ -174,7 +174,7 @@
                   ></path>
                 </svg>
               </a>
-              <button id="email-btn" class="social-link" aria-label="Email">
+              <!-- <button id="email-btn" class="social-link" aria-label="Email">
                 <svg
                   width="20"
                   height="20"
@@ -184,7 +184,7 @@
                 >
                   <path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"></path>
                 </svg>
-              </button>
+              </button> -->
             </div>
           </div>
         </div>
@@ -208,32 +208,12 @@
     <!-- Lightbox -->
     <div class="lightbox" id="lightbox">
       <div class="lightbox-content">
-        <button class="lightbox-close" aria-label="Close lightbox">
-          <svg
-            width="24"
-            height="24"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-          >
-            <line x1="18" y1="6" x2="6" y2="18"></line>
-            <line x1="6" y1="6" x2="18" y2="18"></line>
-          </svg>
-        </button>
-        <img
-          src=""
-          alt="Lightbox image"
-          class="lightbox-image"
-          id="lightboxImage"
-        />
-        <div class="lightbox-actions">
-          <button class="lightbox-btn download-btn" aria-label="Download image">
+        <div class="lightbox-main-container">
+          <!-- Previous button -->
+          <button class="lightbox-btn-nav lightbox-prev" aria-label="Previous image">
             <svg
-              width="24"
-              height="24"
+              width="20"
+              height="20"
               viewBox="0 0 24 24"
               fill="none"
               stroke="currentColor"
@@ -241,11 +221,74 @@
               stroke-linecap="round"
               stroke-linejoin="round"
             >
-              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-              <polyline points="7 10 12 15 17 10"></polyline>
-              <line x1="12" y1="15" x2="12" y2="3"></line>
+              <polyline points="15 18 9 12 15 6"></polyline>
             </svg>
           </button>
+          
+          <div class="lightbox-image-container">
+            <img
+              src=""
+              alt="Lightbox image"
+              class="lightbox-image"
+              id="lightboxImage"
+            />
+            <button class="lightbox-close" aria-label="Close lightbox">
+              <svg
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <line x1="18" y1="6" x2="6" y2="18"></line>
+                <line x1="6" y1="6" x2="18" y2="18"></line>
+              </svg>
+            </button>
+          </div>
+          
+          <!-- Next button -->
+          <button class="lightbox-btn-nav lightbox-next" aria-label="Next image">
+            <svg
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <polyline points="9 18 15 12 9 6"></polyline>
+            </svg>
+          </button>
+        </div>
+        
+        <div class="lightbox-info">
+          <div class="lightbox-tags">
+            <span class="lightbox-tag">Heated Rivalry</span>
+          </div>
+          <div class="lightbox-actions">
+            <button class="lightbox-btn download-btn" aria-label="Download image">
+              <svg
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                <polyline points="7 10 12 15 17 10"></polyline>
+                <line x1="12" y1="15" x2="12" y2="3"></line>
+              </svg>
+              Download
+            </button>
+          </div>
         </div>
       </div>
     </div>
@@ -291,7 +334,6 @@
         </div>
       </div>
     </div>
-
     <script src="scripts/main.js"></script>
   </body>
 </html>
