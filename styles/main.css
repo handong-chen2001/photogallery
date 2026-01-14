@@ -5,6 +5,15 @@
     box-sizing: border-box;
 }
 
+button {
+    border: none;
+    background: none;
+    font: inherit;
+    color: inherit;
+    cursor: pointer;
+    outline: none;
+}
+
 :root {
     /* Colors */
     --primary-color: #000000;
@@ -1136,7 +1145,8 @@ html {
 .menu-toggle:focus,
 .lightbox-close:focus,
 .lightbox-prev:focus,
-.lightbox-next:focus {
+.lightbox-next:focus,
+#email-btn:focus {
     outline: 3px solid var(--secondary-color);
     outline-offset: 2px;
 }
