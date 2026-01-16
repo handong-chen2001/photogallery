@@ -1,122 +1,129 @@
 // Copy email address functionality
 function copyEmail() {
-    const emailText = document.querySelector('.email-text');
-    const email = emailText.textContent.trim();
+    // Define the email address explicitly
+    const email = 'derek.photo@outlook.com';
     
-    // Try Clipboard API first
-    if (navigator.clipboard) {
-        navigator.clipboard.writeText(email)
-            .then(() => {
-                // Show a brief notification
-                showCopyNotification();
-            })
-            .catch(err => {
-                console.error('Failed to copy email with Clipboard API: ', err);
-                // Fallback to document.execCommand
-                fallbackCopyTextToClipboard(email);
-            });
-    } else {
-        // Fallback for browsers that don't support Clipboard API
-        fallbackCopyTextToClipboard(email);
-    }
-}
-
-// Fallback copy method for older browsers
-function fallbackCopyTextToClipboard(text) {
-    const textArea = document.createElement('textarea');
-    textArea.value = text;
-    textArea.style.position = 'fixed'; // Prevent scrolling to bottom
-    textArea.style.left = '-999999px';
-    textArea.style.top = '-999999px';
-    document.body.appendChild(textArea);
-    textArea.focus();
-    textArea.select();
-    
+    // Try a simple copy approach that works in most browsers
     try {
+        // Create a textarea element
+        const textArea = document.createElement('textarea');
+        textArea.value = email;
+        
+        // Position it off-screen but accessible
+        textArea.style.position = 'fixed';
+        textArea.style.left = '-9999px';
+        textArea.style.top = '-9999px';
+        
+        // Add to document
+        document.body.appendChild(textArea);
+        
+        // Select all text
+        textArea.focus();
+        textArea.select();
+        textArea.setSelectionRange(0, textArea.value.length);
+        
+        // Copy to clipboard
         const successful = document.execCommand('copy');
+        
+        // Show notification based on result
         if (successful) {
             showCopyNotification();
         } else {
             throw new Error('execCommand copy failed');
         }
-    } catch (err) {
-        console.error('Failed to copy email with fallback method: ', err);
-        // Show error notification
-        showCopyNotification('Failed to copy email. Please try again.');
-    } finally {
+        
+        // Clean up
         document.body.removeChild(textArea);
+    } catch (err) {
+        console.error('Failed to copy email: ', err);
+        showCopyNotification('Failed to copy email. Please try again.');
     }
 }
 
 // Show copy notification
 function showCopyNotification(message = 'Email copied to clipboard!') {
-    // Check if notification element already exists
-    let notification = document.getElementById('email-copy-notification');
-    let style = document.getElementById('email-notification-style');
-    
-    // If notification doesn't exist, create it
-    if (!notification) {
-        // Create notification element
-        notification = document.createElement('div');
-        notification.id = 'email-copy-notification';
-        
-        // Create style element for animation
-        style = document.createElement('style');
-        style.id = 'email-notification-style';
-        style.textContent = `
-            @keyframes fadeInOut {
-                0% { opacity: 0; transform: translateY(10px); }
-                20% { opacity: 1; transform: translateY(0); }
-                80% { opacity: 1; transform: translateY(0); }
-                100% { opacity: 0; transform: translateY(10px); }
-            }
-            
-            /* Ensure social-link container has proper layout */
-            .social-link {
-                display: inline-block;
-                position: relative;
-            }
-            
-            /* Style for notification */
-            #email-copy-notification {
-                margin-top: 8px;
-                background-color: #FFB74D;
-                color: white;
-                padding: 8px 16px;
-                border-radius: 20px;
-                font-size: 14px;
-                font-weight: bold;
-                text-align: center;
-                animation: fadeInOut 2s ease-in-out;
-                /* Ensure notification is properly positioned */
-                width: fit-content;
-                margin-left: 0;
-                display: block;
-            }
-        `;
-        document.head.appendChild(style);
-        
-        // Find the social-link container and append notification
-        const socialLink = document.querySelector('.social-link');
-        socialLink.appendChild(notification);
+    // Remove any existing notification first
+    const existingNotification = document.getElementById('email-copy-notification');
+    if (existingNotification) {
+        existingNotification.remove();
     }
     
-    // Update notification text
+    // Create notification element
+    const notification = document.createElement('div');
+    notification.id = 'email-copy-notification';
+    
+    // Set initial styles
     notification.textContent = message;
+    notification.style.cssText = `
+        position: absolute;
+        bottom: -45px;
+        left: 0;
+        background-color: #FFB74D;
+        color: white;
+        padding: 8px 16px;
+        border-radius: 20px;
+        font-size: 14px;
+        font-weight: bold;
+        text-align: center;
+        width: fit-content;
+        opacity: 0;
+        transform: translateY(10px);
+        z-index: 1000;
+        pointer-events: none;
+        transition: opacity 0.3s ease, transform 0.3s ease;
+    `;
     
-    // Reset animation by removing and re-adding the element
-    notification.style.animation = 'none';
-    notification.offsetHeight; // Trigger reflow
-    notification.style.animation = 'fadeInOut 2s ease-in-out';
+    // Find the social-link container and add notification
+    const socialLink = document.querySelector('.social-link');
+    socialLink.appendChild(notification);
     
-    // Remove after 2 seconds
-    clearTimeout(notification.timeoutId);
-    notification.timeoutId = setTimeout(() => {
-        notification.remove();
-        if (style) {
-            style.remove();
-        }
+    // Trigger reflow to ensure animation works
+    notification.offsetHeight;
+    
+    // Animate in
+    setTimeout(() => {
+        notification.style.opacity = '1';
+        notification.style.transform = 'translateY(0)';
+    }, 10);
+    
+    // Animate out and remove
+    setTimeout(() => {
+        notification.style.opacity = '0';
+        notification.style.transform = 'translateY(10px)';
+        // Remove after animation completes
+        setTimeout(() => {
+            if (notification.parentNode) {
+                notification.remove();
+            }
+        }, 300);
     }, 2000);
+}
+
+// Add animation keyframes and CSS styles if not already present
+if (!document.getElementById('email-notification-styles')) {
+    const style = document.createElement('style');
+    style.id = 'email-notification-styles';
+    style.textContent = `
+        @keyframes fadeInOut {
+            0% { opacity: 0; transform: translateY(10px); }
+            20% { opacity: 1; transform: translateY(0); }
+            80% { opacity: 1; transform: translateY(0); }
+            100% { opacity: 0; transform: translateY(10px); }
+        }
+        
+        /* Pre-set styles to prevent layout shift on first click */
+        .footer-section .social-link {
+            position: relative !important;
+            display: flex !important;
+            align-items: center !important;
+            gap: 10px !important;
+        }
+        
+        .footer-section .email-text {
+            flex: none !important;
+        }
+    `;
+    document.head.appendChild(style);
 }
 
 // Wait for the DOM to be fully loaded
