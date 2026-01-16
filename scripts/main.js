@@ -36,12 +36,12 @@ function copyEmail() {
         document.body.removeChild(textArea);
     } catch (err) {
         console.error('Failed to copy email: ', err);
-        showCopyNotification('Failed to copy email. Please try again.');
+        showCopyNotification(true);
     }
 }
 
 // Show copy notification
-function showCopyNotification(message = 'Email copied to clipboard!') {
+function showCopyNotification(isError = false) {
     // Remove any existing notification first
     const existingNotification = document.getElementById('email-copy-notification');
     if (existingNotification) {
@@ -52,8 +52,17 @@ function showCopyNotification(message = 'Email copied to clipboard!') {
     const notification = document.createElement('div');
     notification.id = 'email-copy-notification';
     
-    // Set initial styles
+    // Get current language from localStorage or use default
+    const currentLang = localStorage.getItem('preferredLang') || 'en';
+    
+    // Get language data based on current language
+    const currentLangData = currentLang === 'zh' ? langData_zh : langData_en;
+    
+    // Get notification message from language data
+    const message = isError ? currentLangData.email_copy_failed : currentLangData.email_copied;
     notification.textContent = message;
+    
+    // Set initial styles
     notification.style.cssText = `
         position: absolute;
         bottom: -45px;
@@ -99,18 +108,11 @@ function showCopyNotification(message = 'Email copied to clipboard!') {
     }, 2000);
 }
 
-// Add animation keyframes and CSS styles if not already present
+// Add CSS styles to prevent layout shift on first click
 if (!document.getElementById('email-notification-styles')) {
     const style = document.createElement('style');
     style.id = 'email-notification-styles';
     style.textContent = `
-        @keyframes fadeInOut {
-            0% { opacity: 0; transform: translateY(10px); }
-            20% { opacity: 1; transform: translateY(0); }
-            80% { opacity: 1; transform: translateY(0); }
-            100% { opacity: 0; transform: translateY(10px); }
-        }
-        
         /* Pre-set styles to prevent layout shift on first click */
         .footer-section .social-link {
             position: relative !important;
@@ -128,54 +130,22 @@ if (!document.getElementById('email-notification-styles')) {
 
 // Wait for the DOM to be fully loaded
 document.addEventListener('DOMContentLoaded', function() {
-    // Language Support
+    // Create combined language data object from external files
     const langData = {
-        en: {
-            hero_title: 'Heated Rivalry',
-            hero_subtitle_1: 'I\'ll Believe in Anything',
-            hero_subtitle_2: 'You Deserve Sunshine',
-            hero_subtitle_3: 'We Didn\'t Even Kiss',
-            hero_subtitle_4: 'I Love You So Much',
-            hero_subtitle_5: 'Wish You Were Here',
-            filter_all: 'All',
-            filter_still: 'Still',
-            filter_wallpaper: 'Wallpaper',
-            orientation: 'Orientation:',
-            orientation_all: 'All',
-            orientation_landscape: 'Landscape',
-            orientation_portrait: 'Portrait',
-            about_website: 'About This Website',
-            about_website_content: 'Founded by a passionate <em>Heated Rivalry</em> fan, this website serves as a dedicated platform for sharing and appreciating content from the series. Currently focused on <em>Heated Rivalry</em> imagery, my mission is to create a community space for fans to connect, discuss, and enjoy their favorite moments. In the future, I plan to expand my collection to include content from other beloved TV series.',
-            contact_me: 'Contact Me',
-            copyright_1: '&copy; All images featured on this website are sourced from or adapted from screenshots of <em>Heated Rivalry</em> television productions and other referenced TV series. Image copyright remains exclusively with the respective production teams. All content is shared non-commercially and for educational purposes only. Commercial use of any images from this website is strictly prohibited.',
-            copyright_2: 'In case of any copyright concerns or inquiries, please contact me for prompt resolution. Thank you for your understanding and cooperation.',
-            download: 'Download'
-        },
-        zh: {
-            hero_title: '激烈竞争',
-            hero_subtitle_1: '我会相信任何事',
-            hero_subtitle_2: '你值得拥有阳光',
-            hero_subtitle_3: '我们甚至没有接吻',
-            hero_subtitle_4: '我非常爱你',
-            hero_subtitle_5: '希望你在这里',
-            filter_all: '全部',
-            filter_still: '静图',
-            filter_wallpaper: '壁纸',
-            orientation: '方向:',
-            orientation_all: '全部',
-            orientation_landscape: '横屏',
-            orientation_portrait: '竖屏',
-            about_website: '关于本网站',
-            about_website_content: '由一位热情的<em>激烈竞争</em>粉丝创建，本网站是一个专门用于分享和欣赏该系列内容的平台。目前专注于<em>激烈竞争</em>的图像，我的使命是为粉丝创造一个交流、讨论和享受他们喜爱时刻的社区空间。未来，我计划扩展我的收藏，包括其他 beloved 电视剧的内容。',
-            contact_me: '联系我',
-            copyright_1: '&copy; 本网站上展示的所有图片均来自或改编自<em>激烈竞争</em>电视节目和其他参考电视节目的截图。图片版权仍归各自的制作团队所有。所有内容均为非商业用途，仅用于教育目的。严禁商业使用本网站的任何图片。',
-            copyright_2: '如有任何版权问题或咨询，请联系我以便及时解决。感谢您的理解与合作。',
-            download: '下载'
-        }
+        en: langData_en,
+        zh: langData_zh
     };
     
     // Get saved language from localStorage or use default
     let currentLang = localStorage.getItem('preferredLang') || 'en';
+    
+    // Update lightbox tag text based on current language
+    function updateLightboxTag(lang) {
+        const lightboxTag = document.querySelector('.lightbox-tag');
+        if (lightboxTag) {
+            lightboxTag.textContent = langData[lang].lightbox_title;
+        }
+    }
     
     // Translate function
     function translatePage(lang) {
@@ -191,13 +161,10 @@ document.addEventListener('DOMContentLoaded', function() {
         });
         
         // Update page title
-        document.title = lang === 'zh' ? '激烈竞争摄影画廊' : 'Heated Rivalry Photography Gallery';
+        document.title = langData[lang].page_title;
         
-        // Update lightbox tag if it exists
-        const lightboxTag = document.querySelector('.lightbox-tag');
-        if (lightboxTag) {
-            lightboxTag.textContent = lang === 'zh' ? '激烈竞争' : 'Heated Rivalry';
-        }
+        // Update lightbox tag
+        updateLightboxTag(lang);
     }
     
     // Language switch handler
@@ -236,20 +203,10 @@ document.addEventListener('DOMContentLoaded', function() {
     let currentSlide = 0;
     let slideInterval;
     
-    // All available landscape images
-    // Note: If you add more images later, simply update the 'totalImages' variable
-    // const totalImages = 9;
-    // const landscapeImages = Array.from({ length: totalImages }, (_, i) => {
-    //     const index = i + 1;
-    //     // Determine file extension based on index
-    //     const extension = index === 1 ? 'jpg' : 'png';
-    //     return `images/landscape/ls-${index}.${extension}`;
-    // });
-    
-    // Function to get random unique images
+    // Get random images from array
     function getRandomImages(images, count) {
         const shuffled = [...images].sort(() => 0.5 - Math.random());
-        return shuffled.slice(0, count);
+        return shuffled.slice(0, Math.min(count, shuffled.length));
     }
     
     // Set random images to hero slides
@@ -1061,10 +1018,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
         
         // Update lightbox tag language
-        const lightboxTag = document.querySelector('.lightbox-tag');
-        if (lightboxTag) {
-            lightboxTag.textContent = currentLang === 'zh' ? '激烈竞争' : 'Heated Rivalry';
-        }
+        updateLightboxTag(currentLang);
     }
     
     function openLightbox(index) {
@@ -1100,10 +1054,7 @@ document.addEventListener('DOMContentLoaded', function() {
         document.body.style.overflow = 'hidden';
         
         // Update lightbox tag based on current language
-        const lightboxTag = document.querySelector('.lightbox-tag');
-        if (lightboxTag) {
-            lightboxTag.textContent = currentLang === 'zh' ? '激烈竞争' : 'Heated Rivalry';
-        }
+        updateLightboxTag(currentLang);
         
         // Set image source and wait for it to load
         lightboxImg.src = lightboxImages[currentLightboxIndex];
