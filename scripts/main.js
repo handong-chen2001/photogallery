@@ -1,5 +1,104 @@
 // Wait for the DOM to be fully loaded
 document.addEventListener('DOMContentLoaded', function() {
+    // Language Support
+    const langData = {
+        en: {
+            hero_title: 'Heated Rivalry',
+            hero_subtitle_1: 'I\'ll Believe in Anything',
+            hero_subtitle_2: 'You Deserve Sunshine',
+            hero_subtitle_3: 'We Didn\'t Even Kiss',
+            hero_subtitle_4: 'I Love You So Much',
+            hero_subtitle_5: 'Wish You Were Here',
+            filter_all: 'All',
+            filter_still: 'Still',
+            filter_wallpaper: 'Wallpaper',
+            orientation: 'Orientation:',
+            orientation_all: 'All',
+            orientation_landscape: 'Landscape',
+            orientation_portrait: 'Portrait',
+            about_website: 'About This Website',
+            about_website_content: 'Founded by a passionate <em>Heated Rivalry</em> fan, this website serves as a dedicated platform for sharing and appreciating content from the series. Currently focused on <em>Heated Rivalry</em> imagery, my mission is to create a community space for fans to connect, discuss, and enjoy their favorite moments. In the future, I plan to expand my collection to include content from other beloved TV series.',
+            contact_me: 'Contact Me',
+            copyright_1: '&copy; All images featured on this website are sourced from or adapted from screenshots of <em>Heated Rivalry</em> television productions and other referenced TV series. Image copyright remains exclusively with the respective production teams. All content is shared non-commercially and for educational purposes only. Commercial use of any images from this website is strictly prohibited.',
+            copyright_2: 'In case of any copyright concerns or inquiries, please contact me for prompt resolution. Thank you for your understanding and cooperation.',
+            download: 'Download'
+        },
+        zh: {
+            hero_title: '激烈竞争',
+            hero_subtitle_1: '我会相信任何事',
+            hero_subtitle_2: '你值得拥有阳光',
+            hero_subtitle_3: '我们甚至没有接吻',
+            hero_subtitle_4: '我非常爱你',
+            hero_subtitle_5: '希望你在这里',
+            filter_all: '全部',
+            filter_still: '静图',
+            filter_wallpaper: '壁纸',
+            orientation: '方向:',
+            orientation_all: '全部',
+            orientation_landscape: '横屏',
+            orientation_portrait: '竖屏',
+            about_website: '关于本网站',
+            about_website_content: '由一位热情的<em>激烈竞争</em>粉丝创建，本网站是一个专门用于分享和欣赏该系列内容的平台。目前专注于<em>激烈竞争</em>的图像，我的使命是为粉丝创造一个交流、讨论和享受他们喜爱时刻的社区空间。未来，我计划扩展我的收藏，包括其他 beloved 电视剧的内容。',
+            contact_me: '联系我',
+            copyright_1: '&copy; 本网站上展示的所有图片均来自或改编自<em>激烈竞争</em>电视节目和其他参考电视节目的截图。图片版权仍归各自的制作团队所有。所有内容均为非商业用途，仅用于教育目的。严禁商业使用本网站的任何图片。',
+            copyright_2: '如有任何版权问题或咨询，请联系我以便及时解决。感谢您的理解与合作。',
+            download: '下载'
+        }
+    };
+    
+    // Get saved language from localStorage or use default
+    let currentLang = localStorage.getItem('preferredLang') || 'en';
+    
+    // Translate function
+    function translatePage(lang) {
+        // Update document lang attribute
+        document.documentElement.lang = lang;
+        
+        // Update all elements with data-i18n attribute
+        document.querySelectorAll('[data-i18n]').forEach(el => {
+            const key = el.dataset.i18n;
+            if (langData[lang][key]) {
+                el.innerHTML = langData[lang][key];
+            }
+        });
+        
+        // Update page title
+        document.title = lang === 'zh' ? '激烈竞争摄影画廊' : 'Heated Rivalry Photography Gallery';
+        
+        // Update lightbox tag if it exists
+        const lightboxTag = document.querySelector('.lightbox-tag');
+        if (lightboxTag) {
+            lightboxTag.textContent = lang === 'zh' ? '激烈竞争' : 'Heated Rivalry';
+        }
+    }
+    
+    // Language switch handler
+    function switchLanguage(lang) {
+        currentLang = lang;
+        localStorage.setItem('preferredLang', lang);
+        
+        // Update active state of language buttons
+        document.querySelectorAll('.language-btn').forEach(btn => {
+            btn.classList.remove('active');
+        });
+        document.querySelector(`[data-lang="${lang}"]`).classList.add('active');
+        
+        // Translate the page
+        translatePage(lang);
+    }
+    
+    // Initialize language
+    translatePage(currentLang);
+    document.querySelector(`[data-lang="${currentLang}"]`).classList.add('active');
+    
+    // Add event listeners for language buttons
+    document.querySelectorAll('.language-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const lang = this.dataset.lang;
+            switchLanguage(lang);
+        });
+    });
+    
     // Hero Slider
     const heroSlides = document.querySelectorAll('.hero-slide');
     const heroPrev = document.querySelector('.hero-btn.prev');
@@ -402,7 +501,70 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
     
-    // Dynamic Gallery Generation
+    // Waterfall Layout with Original Image Dimensions
+    let columnCount = 3;
+    let columnHeights = [];
+    
+    // Calculate optimal column count based on screen size
+    function calculateColumnCount() {
+        const width = window.innerWidth;
+        if (width < 576) {
+            columnCount = 1;
+        } else if (width < 992) {
+            columnCount = 2;
+        } else {
+            columnCount = 3;
+        }
+        return columnCount;
+    }
+    
+    // Initialize column heights
+    function initColumnHeights() {
+        columnHeights = new Array(columnCount).fill(0);
+    }
+    
+    // Find the shortest column index, always preferring leftmost columns
+    function findShortestColumn() {
+        if (columnHeights.length === 0) return 0;
+        
+        let shortestIndex = 0;
+        let shortestHeight = columnHeights[0];
+        
+        for (let i = 1; i < columnHeights.length; i++) {
+            // Use a larger epsilon to prioritize left columns when heights are similar
+            // This ensures single images in last row are placed on the left
+            const epsilon = 10; // 10px tolerance
+            if (columnHeights[i] < shortestHeight - epsilon) {
+                shortestHeight = columnHeights[i];
+                shortestIndex = i;
+            }
+        }
+        
+        return shortestIndex;
+    }
+    
+    // Function to check if all images are loaded
+    function checkIfAllImagesLoaded() {
+        if (window.imagesLoaded === window.totalImagesToLoad) {
+            // Re-apply waterfall layout to ensure consistent positioning
+            // This ensures all images are positioned in DOM order, not loading order
+            reapplyWaterfallLayout();
+            
+            // Only re-initialize filter functionality once
+            if (!window.filterInitialized) {
+                initializeGalleryFilter();
+                window.filterInitialized = true;
+            } else {
+                // Just update the galleryItems reference in filter functionality
+                updateGalleryFilter();
+            }
+            
+            // Initialize lightbox functionality after gallery is generated
+            initializeLightbox();
+        }
+    }
+    
+    // Dynamic Gallery Generation with Waterfall Layout
     function generateGallery(config) {
         const galleryGrid = document.querySelector('.gallery-grid');
         if (!galleryGrid) return;
@@ -412,28 +574,33 @@ document.addEventListener('DOMContentLoaded', function() {
             galleryConfig = config;
         }
         
+        // Reset loaded images count
+        window.imagesLoaded = 0;
+        window.totalImagesToLoad = 0;
+        
+        // Get total images count
+        Object.values(galleryConfig).forEach(config => {
+            window.totalImagesToLoad += config.totalImages;
+        });
+        
         // Clear existing gallery items
         galleryGrid.innerHTML = '';
         
-        // Reset only necessary styles for JS masonry
-        galleryGrid.style.position = '';
-        galleryGrid.style.height = '';
-        // Preserve CSS grid styles
-        // galleryGrid.style.display = '';
-        // galleryGrid.style.gridTemplateColumns = '';
-        // galleryGrid.style.gap = '';
+        // Set gallery grid to use absolute positioning for waterfall layout
+        galleryGrid.style.position = 'relative';
+        galleryGrid.style.height = 'auto';
         galleryGrid.style.gridAutoRows = '';
         galleryGrid.style.gridTemplateRows = '';
         galleryGrid.style.alignItems = '';
+        galleryGrid.style.justifyContent = '';
         
-        // Track loaded images
-        let imagesLoaded = 0;
-        let totalImagesToLoad = 0;
+        // Calculate column count and initialize heights
+        calculateColumnCount();
+        initColumnHeights();
         
         // Generate new gallery items based on configuration
         Object.entries(galleryConfig).forEach(([category, config]) => {
             const { totalImages, mapToLandscape } = config;
-            totalImagesToLoad += totalImages;
             
             for (let i = 1; i <= totalImages; i++) {
                 const galleryItem = document.createElement('div');
@@ -448,25 +615,51 @@ document.addEventListener('DOMContentLoaded', function() {
                 img.alt = `${category.charAt(0).toUpperCase() + category.slice(1)} Image ${i}`;
                 img.className = 'gallery-image';
                 
+                // Set initial styles to maintain original dimensions
+                img.style.objectFit = 'contain';
+                img.style.objectPosition = 'center';
+                img.style.width = 'auto';
+                img.style.height = 'auto';
+                img.style.maxWidth = '100%';
+                img.style.maxHeight = 'none';
+                img.style.background = 'transparent';
+                
                 // Detect image orientation once image is loaded
                 img.addEventListener('load', function() {
-                    const orientation = getImageOrientation(this.naturalWidth, this.naturalHeight);
+                    // Get original dimensions and calculate container width
+                    const naturalWidth = this.naturalWidth;
+                    const naturalHeight = this.naturalHeight;
+                    const orientation = getImageOrientation(naturalWidth, naturalHeight);
                     galleryItem.dataset.orientation = orientation;
                     
-                    // Add specific styles for portrait images
-                    if (orientation === 'portrait') {
-                        this.style.objectFit = 'cover';
-                        this.style.objectPosition = 'center 25%';
-                    }
+                    // Only set dimensions and orientation, don't calculate position yet
+                    // Position will be calculated for all images once they're all loaded
+                    const galleryGrid = this.closest('.gallery-grid');
+                    const gap = parseFloat(window.getComputedStyle(galleryGrid).gap);
+                    const containerWidth = galleryGrid.offsetWidth;
+                    const columnWidth = (containerWidth - gap * (columnCount - 1)) / columnCount;
                     
-                    imagesLoaded++;
+                    // Calculate new dimensions while maintaining original aspect ratio
+                    let itemWidth = Math.min(naturalWidth, columnWidth);
+                    let itemHeight = (itemWidth * naturalHeight) / naturalWidth;
+                    
+                    // Set item dimensions while keeping original ratio
+                    galleryItem.style.width = `${itemWidth}px`;
+                    galleryItem.style.height = `${itemHeight}px`;
+                    
+                    // Add loaded class for smooth transition
+                    galleryItem.classList.add('loaded');
+                    
+                    window.imagesLoaded++;
                     checkIfAllImagesLoaded();
                 });
                 
-                // Fallback orientation if image fails to load
+                // Fallback if image fails to load
                 img.addEventListener('error', function() {
                     galleryItem.dataset.orientation = 'landscape'; // Default fallback
-                    imagesLoaded++;
+                    galleryItem.classList.add('loaded');
+                    
+                    window.imagesLoaded++;
                     checkIfAllImagesLoaded();
                 });
                 
@@ -475,31 +668,36 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
         
-        // Function to check if all images are loaded
-        function checkIfAllImagesLoaded() {
-            if (imagesLoaded === totalImagesToLoad) {
-                // Apply masonry layout after all images are loaded
-                applyMasonryLayout();
-                
-                // Only re-initialize filter functionality once
-                if (!window.filterInitialized) {
-                    initializeGalleryFilter();
-                    window.filterInitialized = true;
-                } else {
-                    // Just update the galleryItems reference in filter functionality
-                    updateGalleryFilter();
-                }
-                
-                // Initialize lightbox functionality after gallery is generated
-                initializeLightbox();
+        // If no images to load, initialize immediately
+        if (window.totalImagesToLoad === 0) {
+            if (!window.filterInitialized) {
+                initializeGalleryFilter();
+                window.filterInitialized = true;
             }
-        }
-        
-        // If no images to load, apply layout immediately
-        if (totalImagesToLoad === 0) {
-            applyMasonryLayout();
+            initializeLightbox();
         }
     }
+    
+    // Update waterfall layout when window is resized
+    function updateWaterfallLayout() {
+        // Skip if no gallery grid
+        const galleryGrid = document.querySelector('.gallery-grid');
+        if (!galleryGrid) return;
+        
+        // Calculate new column count
+        const newColumnCount = calculateColumnCount();
+        
+        // Only re-layout if column count changed
+        if (newColumnCount !== columnCount) {
+            // Just call reapplyWaterfallLayout which handles all repositioning logic
+            reapplyWaterfallLayout();
+        }
+    }
+    
+    // Initialize window resize listener for waterfall layout
+    window.addEventListener('resize', function() {
+        updateWaterfallLayout();
+    });
     
     // Gallery Filter - Global variables to keep state
     let currentGalleryItems = [];
@@ -516,53 +714,136 @@ document.addEventListener('DOMContentLoaded', function() {
         const activeOrientationBtn = document.querySelector('.orientation-btn.active');
         const orientationFilter = activeOrientationBtn ? activeOrientationBtn.dataset.orientation : 'all';
         
-        // Use requestAnimationFrame for smoother animations
-        requestAnimationFrame(() => {
-            // First show/hide items immediately without animation
-            currentGalleryItems.forEach(item => {
-                // Get item category and orientation
-                const itemCategory = item.dataset.category;
-                const itemOrientation = item.dataset.orientation;
-                
-                // Check if item matches both filters
-                const categoryMatch = categoryFilter === 'all' || itemCategory === categoryFilter;
-                const orientationMatch = orientationFilter === 'all' || itemOrientation === orientationFilter;
-                
-                // Show/hide without animation first
-                if (categoryMatch && orientationMatch) {
-                    item.style.display = 'block';
-                    item.style.opacity = '0';
-                    item.style.transform = 'scale(0.9)';
-                } else {
-                    item.style.display = 'none';
-                    item.style.opacity = '0';
-                    item.style.transform = 'scale(0.9)';
-                }
-            });
+        const galleryGrid = document.querySelector('.gallery-grid');
+        if (!galleryGrid) return;
+        
+        // First show/hide items immediately without any animation
+        currentGalleryItems.forEach(item => {
+            // Get item category and orientation
+            const itemCategory = item.dataset.category;
+            const itemOrientation = item.dataset.orientation;
             
-            // Apply masonry layout immediately after showing/hiding items
-            applyMasonryLayout();
+            // Check if item matches both filters
+            const categoryMatch = categoryFilter === 'all' || itemCategory === categoryFilter;
+            const orientationMatch = orientationFilter === 'all' || itemOrientation === orientationFilter;
             
-            // Then apply animation with a small delay to allow layout to settle
-            setTimeout(() => {
-                currentGalleryItems.forEach(item => {
-                    // Get item category and orientation
-                    const itemCategory = item.dataset.category;
-                    const itemOrientation = item.dataset.orientation;
-                    
-                    // Check if item matches both filters
-                    const categoryMatch = categoryFilter === 'all' || itemCategory === categoryFilter;
-                    const orientationMatch = orientationFilter === 'all' || itemOrientation === orientationFilter;
-                    
-                    // Apply fade-in animation to visible items
-                    if (categoryMatch && orientationMatch) {
-                        item.style.transition = 'all 0.3s ease';
-                        item.style.opacity = '1';
-                        item.style.transform = 'scale(1)';
-                    }
-                });
-            }, 50);
+            // Show/hide without any animation or transition
+            if (categoryMatch && orientationMatch) {
+                // Remove any existing transition styles
+                item.style.transition = 'none';
+                item.style.opacity = '1';
+                item.style.transform = 'none';
+                item.style.display = 'block';
+            } else {
+                // Remove any existing transition styles
+                item.style.transition = 'none';
+                item.style.display = 'none';
+                item.style.opacity = '1';
+                item.style.transform = 'none';
+            }
         });
+        
+        // Force reflow immediately
+        void galleryGrid.offsetWidth;
+        
+        // Re-apply waterfall layout after filtering
+        reapplyWaterfallLayout();
+    }
+    
+    // Function to reapply waterfall layout after filtering
+    function reapplyWaterfallLayout() {
+        const galleryGrid = document.querySelector('.gallery-grid');
+        if (!galleryGrid) return;
+        
+        // Get all visible items
+        const visibleItems = Array.from(galleryGrid.children).filter(item => {
+            return item.style.display !== 'none' && window.getComputedStyle(item).display !== 'none';
+        });
+        
+        if (visibleItems.length === 0) {
+            // No visible items, reset grid styles
+            galleryGrid.style.position = '';
+            galleryGrid.style.height = '';
+            return;
+        }
+        
+        // Set gallery grid to use absolute positioning for waterfall layout
+        galleryGrid.style.position = 'relative';
+        galleryGrid.style.height = 'auto';
+        galleryGrid.style.gridAutoRows = '';
+        galleryGrid.style.gridTemplateRows = '';
+        galleryGrid.style.alignItems = '';
+        galleryGrid.style.justifyContent = '';
+        
+        // Calculate column count and initialize heights
+        calculateColumnCount();
+        initColumnHeights();
+        
+        // Get gap size
+        const gap = parseFloat(window.getComputedStyle(galleryGrid).gap);
+        const containerWidth = galleryGrid.offsetWidth;
+        const columnWidth = (containerWidth - gap * (columnCount - 1)) / columnCount;
+        
+        // Reset all visible items positioning
+        visibleItems.forEach(item => {
+            item.style.position = '';
+            item.style.left = '';
+            item.style.top = '';
+            item.style.width = '';
+        });
+        
+        // Force reflow
+        void galleryGrid.offsetWidth;
+        
+        // Re-position all visible items in the same order as initial load
+        // Sort items by their original category and index to match initial load order
+        const sortedItems = [...visibleItems].sort((a, b) => {
+            // Extract category and index from item
+            const aCategory = a.dataset.category;
+            const bCategory = b.dataset.category;
+            
+            // First sort by category
+            if (aCategory !== bCategory) {
+                return aCategory.localeCompare(bCategory);
+            }
+            
+            // Then sort by their position in the DOM to maintain original order
+            return Array.from(galleryGrid.children).indexOf(a) - Array.from(galleryGrid.children).indexOf(b);
+        });
+        
+        // Re-position all sorted items
+        sortedItems.forEach(item => {
+            const img = item.querySelector('.gallery-image');
+            if (!img) return;
+            
+            // Get image dimensions
+            const naturalWidth = img.naturalWidth;
+            const naturalHeight = img.naturalHeight;
+            
+            // Calculate item dimensions while maintaining original aspect ratio
+            let itemWidth = Math.min(naturalWidth, columnWidth);
+            let itemHeight = (itemWidth * naturalHeight) / naturalWidth;
+            
+            // Set item dimensions
+            item.style.width = `${itemWidth}px`;
+            item.style.height = `${itemHeight}px`;
+            
+            // Find the shortest column to place this item
+            const shortestColumnIndex = findShortestColumn();
+            
+            // Apply position for waterfall layout
+            const left = shortestColumnIndex * (columnWidth + gap);
+            item.style.position = 'absolute';
+            item.style.left = `${left}px`;
+            item.style.top = `${columnHeights[shortestColumnIndex]}px`;
+            
+            // Update column height
+            columnHeights[shortestColumnIndex] += itemHeight + gap;
+        });
+        
+        // Update gallery grid height to fit all items
+        const maxHeight = Math.max(...columnHeights);
+        galleryGrid.style.height = `${maxHeight}px`;
     }
     
     // Gallery Filter initialization
@@ -609,12 +890,15 @@ document.addEventListener('DOMContentLoaded', function() {
     // Initialize gallery after DOM is loaded with dynamic image detection
     initializeGallery();
     
-    // Apply masonry layout on window resize
+    // Update gallery items on window resize for CSS Grid layout
     window.addEventListener('resize', function() {
         // Debounce to avoid too many recalculations
         clearTimeout(window.resizeTimeout);
         window.resizeTimeout = setTimeout(() => {
-            applyMasonryLayout();
+            // Re-apply filters to update grid layout
+            if (window.filterInitialized) {
+                applyFilters();
+            }
         }, 250);
     });
     
@@ -647,6 +931,12 @@ document.addEventListener('DOMContentLoaded', function() {
                 openLightbox(index);
             });
         });
+        
+        // Update lightbox tag language
+        const lightboxTag = document.querySelector('.lightbox-tag');
+        if (lightboxTag) {
+            lightboxTag.textContent = currentLang === 'zh' ? '激烈竞争' : 'Heated Rivalry';
+        }
     }
     
     function openLightbox(index) {
@@ -680,6 +970,12 @@ document.addEventListener('DOMContentLoaded', function() {
         lightbox.classList.add('active');
         // Disable scrolling
         document.body.style.overflow = 'hidden';
+        
+        // Update lightbox tag based on current language
+        const lightboxTag = document.querySelector('.lightbox-tag');
+        if (lightboxTag) {
+            lightboxTag.textContent = currentLang === 'zh' ? '激烈竞争' : 'Heated Rivalry';
+        }
         
         // Set image source and wait for it to load
         lightboxImg.src = lightboxImages[currentLightboxIndex];
@@ -981,7 +1277,6 @@ document.addEventListener('DOMContentLoaded', function() {
             console.log('Is local path:', isLocalPath);
             
             if (isLocalPath) {
-                // For local file paths, use special handling
                 console.log('Handling local file path:', imgUrl);
                 downloadLocalImage(imgUrl, filename);
             } else {
@@ -992,6 +1287,53 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     } else {
         console.error('Download button not found in DOM');
+    }
+
+    // Copy email address functionality
+    function copyEmail() {
+        const emailText = document.querySelector('.email-text');
+        const email = emailText.textContent.trim();
+        
+        // Copy email to clipboard
+        navigator.clipboard.writeText(email)
+            .then(() => {
+                // Show a brief notification
+                showCopyNotification();
+            })
+            .catch(err => {
+                console.error('Failed to copy email: ', err);
+            });
+    }
+    
+    // Show copy notification
+    function showCopyNotification() {
+        // Create notification element
+        const notification = document.createElement('div');
+        notification.textContent = 'Email copied to clipboard!';
+        notification.style.cssText = `
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 4px;
+            font-size: 14px;
+            z-index: 9999;
+            transition: opacity 0.3s ease;
+        `;
+        
+        // Add to DOM
+        document.body.appendChild(notification);
+        
+        // Remove after 2 seconds
+        setTimeout(() => {
+            notification.style.opacity = '0';
+            setTimeout(() => {
+                document.body.removeChild(notification);
+            }, 300);
+        }, 2000);
     }
     
     // Download Notification Functions
