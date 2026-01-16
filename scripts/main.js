@@ -1,3 +1,124 @@
+// Copy email address functionality
+function copyEmail() {
+    const emailText = document.querySelector('.email-text');
+    const email = emailText.textContent.trim();
+    
+    // Try Clipboard API first
+    if (navigator.clipboard) {
+        navigator.clipboard.writeText(email)
+            .then(() => {
+                // Show a brief notification
+                showCopyNotification();
+            })
+            .catch(err => {
+                console.error('Failed to copy email with Clipboard API: ', err);
+                // Fallback to document.execCommand
+                fallbackCopyTextToClipboard(email);
+            });
+    } else {
+        // Fallback for browsers that don't support Clipboard API
+        fallbackCopyTextToClipboard(email);
+    }
+}
+
+// Fallback copy method for older browsers
+function fallbackCopyTextToClipboard(text) {
+    const textArea = document.createElement('textarea');
+    textArea.value = text;
+    textArea.style.position = 'fixed'; // Prevent scrolling to bottom
+    textArea.style.left = '-999999px';
+    textArea.style.top = '-999999px';
+    document.body.appendChild(textArea);
+    textArea.focus();
+    textArea.select();
+    
+    try {
+        const successful = document.execCommand('copy');
+        if (successful) {
+            showCopyNotification();
+        } else {
+            throw new Error('execCommand copy failed');
+        }
+    } catch (err) {
+        console.error('Failed to copy email with fallback method: ', err);
+        // Show error notification
+        showCopyNotification('Failed to copy email. Please try again.');
+    } finally {
+        document.body.removeChild(textArea);
+    }
+}
+
+// Show copy notification
+function showCopyNotification(message = 'Email copied to clipboard!') {
+    // Check if notification element already exists
+    let notification = document.getElementById('email-copy-notification');
+    let style = document.getElementById('email-notification-style');
+    
+    // If notification doesn't exist, create it
+    if (!notification) {
+        // Create notification element
+        notification = document.createElement('div');
+        notification.id = 'email-copy-notification';
+        
+        // Create style element for animation
+        style = document.createElement('style');
+        style.id = 'email-notification-style';
+        style.textContent = `
+            @keyframes fadeInOut {
+                0% { opacity: 0; transform: translateY(10px); }
+                20% { opacity: 1; transform: translateY(0); }
+                80% { opacity: 1; transform: translateY(0); }
+                100% { opacity: 0; transform: translateY(10px); }
+            }
+            
+            /* Ensure social-link container has proper layout */
+            .social-link {
+                display: inline-block;
+                position: relative;
+            }
+            
+            /* Style for notification */
+            #email-copy-notification {
+                margin-top: 8px;
+                background-color: #FFB74D;
+                color: white;
+                padding: 8px 16px;
+                border-radius: 20px;
+                font-size: 14px;
+                font-weight: bold;
+                text-align: center;
+                animation: fadeInOut 2s ease-in-out;
+                /* Ensure notification is properly positioned */
+                width: fit-content;
+                margin-left: 0;
+                display: block;
+            }
+        `;
+        document.head.appendChild(style);
+        
+        // Find the social-link container and append notification
+        const socialLink = document.querySelector('.social-link');
+        socialLink.appendChild(notification);
+    }
+    
+    // Update notification text
+    notification.textContent = message;
+    
+    // Reset animation by removing and re-adding the element
+    notification.style.animation = 'none';
+    notification.offsetHeight; // Trigger reflow
+    notification.style.animation = 'fadeInOut 2s ease-in-out';
+    
+    // Remove after 2 seconds
+    clearTimeout(notification.timeoutId);
+    notification.timeoutId = setTimeout(() => {
+        notification.remove();
+        if (style) {
+            style.remove();
+        }
+    }, 2000);
+}
+
 // Wait for the DOM to be fully loaded
 document.addEventListener('DOMContentLoaded', function() {
     // Language Support
@@ -1289,53 +1410,6 @@ document.addEventListener('DOMContentLoaded', function() {
         console.error('Download button not found in DOM');
     }
 
-    // Copy email address functionality
-    function copyEmail() {
-        const emailText = document.querySelector('.email-text');
-        const email = emailText.textContent.trim();
-        
-        // Copy email to clipboard
-        navigator.clipboard.writeText(email)
-            .then(() => {
-                // Show a brief notification
-                showCopyNotification();
-            })
-            .catch(err => {
-                console.error('Failed to copy email: ', err);
-            });
-    }
-    
-    // Show copy notification
-    function showCopyNotification() {
-        // Create notification element
-        const notification = document.createElement('div');
-        notification.textContent = 'Email copied to clipboard!';
-        notification.style.cssText = `
-            position: fixed;
-            bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            background-color: rgba(0, 0, 0, 0.8);
-            color: white;
-            padding: 12px 24px;
-            border-radius: 4px;
-            font-size: 14px;
-            z-index: 9999;
-            transition: opacity 0.3s ease;
-        `;
-        
-        // Add to DOM
-        document.body.appendChild(notification);
-        
-        // Remove after 2 seconds
-        setTimeout(() => {
-            notification.style.opacity = '0';
-            setTimeout(() => {
-                document.body.removeChild(notification);
-            }, 300);
-        }, 2000);
-    }
-    
     // Download Notification Functions
     let downloadNotification = null;
     let notificationBtn = null;
