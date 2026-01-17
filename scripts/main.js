@@ -178,13 +178,35 @@ document.addEventListener('DOMContentLoaded', function() {
         });
         document.querySelector(`[data-lang="${lang}"]`).classList.add('active');
         
+        // Update language switcher class for smooth transition
+        const languageSwitcher = document.querySelector('.language-switcher');
+        if (lang === 'zh') {
+            languageSwitcher.classList.add('zh');
+        } else {
+            languageSwitcher.classList.remove('zh');
+        }
+        
         // Translate the page
         translatePage(lang);
     }
     
     // Initialize language
     translatePage(currentLang);
+    
+    // Ensure only the correct button has active class on initial load
+    const langButtons = document.querySelectorAll('.language-btn');
+    langButtons.forEach(btn => {
+        btn.classList.remove('active');
+    });
     document.querySelector(`[data-lang="${currentLang}"]`).classList.add('active');
+    
+    // Initialize language switcher class
+    const languageSwitcher = document.querySelector('.language-switcher');
+    if (currentLang === 'zh') {
+        languageSwitcher.classList.add('zh');
+    } else {
+        languageSwitcher.classList.remove('zh');
+    }
     
     // Add event listeners for language buttons
     document.querySelectorAll('.language-btn').forEach(btn => {
@@ -195,10 +217,10 @@ document.addEventListener('DOMContentLoaded', function() {
     });
     
     // Hero Slider
-    const heroSlides = document.querySelectorAll('.hero-slide');
+    let heroSlides = document.querySelectorAll('.hero-slide');
     const heroPrev = document.querySelector('.hero-btn.prev');
     const heroNext = document.querySelector('.hero-btn.next');
-    const indicators = document.querySelectorAll('.indicator');
+    let indicators = document.querySelectorAll('.indicator');
     
     let currentSlide = 0;
     let slideInterval;
@@ -212,7 +234,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Set random images to hero slides
     function setRandomHeroImages() {
         // Generate still category images from galleryConfig
-        const stillImages = [];
+        let stillImages = [];
         if (galleryConfig.still) {
             const stillConfig = galleryConfig.still;
             for (let i = 1; i <= stillConfig.totalImages; i++) {
@@ -220,15 +242,144 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }
         
-        // Use still images for hero slides
-        const randomImages = getRandomImages(stillImages, heroSlides.length);
+        // Shuffle all still images
+        const shuffledImages = [...stillImages].sort(() => 0.5 - Math.random());
         
-        heroSlides.forEach((slide, index) => {
-            const heroImage = slide.querySelector('.hero-image');
-            if (heroImage && randomImages[index]) {
-                heroImage.style.backgroundImage = `url('${randomImages[index]}')`;
-            }
+        // Get hero section element
+        const heroSection = document.querySelector('.hero');
+        
+        // Remove existing slides except indicators and controls
+        const existingSlides = heroSection.querySelectorAll('.hero-slide');
+        existingSlides.forEach(slide => slide.remove());
+        
+        // Generate new slides based on shuffled images
+        shuffledImages.forEach((imageUrl, index) => {
+            // Create new slide element
+            const slide = document.createElement('div');
+            slide.className = `hero-slide ${index === 0 ? 'active' : ''}`;
+            
+            // Create hero image element
+            const heroImage = document.createElement('div');
+            heroImage.className = 'hero-image';
+            heroImage.style.backgroundImage = `url('${imageUrl}')`;
+            
+            // Create hero content element
+            const heroContent = document.createElement('div');
+            heroContent.className = 'hero-content';
+            
+            // Create hero title element
+            const heroTitle = document.createElement('h1');
+            heroTitle.className = 'hero-title';
+            heroTitle.dataset.i18n = 'hero_title';
+            
+            // Create hero subtitle element
+            const heroSubtitle = document.createElement('p');
+            heroSubtitle.className = 'hero-subtitle';
+            heroSubtitle.dataset.i18n = `hero_subtitle_${index % 5 + 1}`;
+            
+            // Assemble the content
+            heroContent.appendChild(heroTitle);
+            heroContent.appendChild(heroSubtitle);
+            
+            // Assemble the slide
+            slide.appendChild(heroImage);
+            slide.appendChild(heroContent);
+            
+            // Insert slide before controls
+            const heroControls = heroSection.querySelector('.hero-controls');
+            heroSection.insertBefore(slide, heroControls);
         });
+        
+        // Update heroSlides reference
+        heroSlides = document.querySelectorAll('.hero-slide');
+        
+        // Update indicators if needed
+        updateHeroIndicators();
+        
+        // Translate the new slides
+        translatePage(currentLang);
+    }
+    
+    // Update hero indicators based on current slides
+    function updateHeroIndicators() {
+        const heroSection = document.querySelector('.hero');
+        const existingIndicators = heroSection.querySelector('.hero-indicators');
+        
+        // Remove existing indicators
+        if (existingIndicators) {
+            existingIndicators.remove();
+        }
+        
+        // Create new indicators container
+        const indicatorsContainer = document.createElement('div');
+        indicatorsContainer.className = 'hero-indicators';
+        
+        // Limit the number of indicators to a maximum of 9
+        const maxIndicators = 9;
+        const slideCount = heroSlides.length;
+        const showAllIndicators = slideCount <= maxIndicators;
+        
+        // Create indicator for each slide or limited indicators
+        if (showAllIndicators) {
+            // Show all indicators if slide count is <= maxIndicators
+            heroSlides.forEach((_, index) => {
+                createIndicator(index, indicatorsContainer);
+            });
+        } else {
+            // Show limited indicators with first, last, and current slide indicators
+            // Always show first slide indicator
+            createIndicator(0, indicatorsContainer);
+            
+            // Show ellipsis if there are slides between first and current
+            if (currentSlide > 2) {
+                const ellipsis1 = document.createElement('span');
+                ellipsis1.className = 'indicator-ellipsis';
+                ellipsis1.textContent = '...';
+                indicatorsContainer.appendChild(ellipsis1);
+            }
+            
+            // Show up to 3 indicators around current slide
+            const startIndex = Math.max(1, currentSlide - 1);
+            const endIndex = Math.min(slideCount - 2, currentSlide + 1);
+            
+            for (let i = startIndex; i <= endIndex; i++) {
+                createIndicator(i, indicatorsContainer);
+            }
+            
+            // Show ellipsis if there are slides between current and last
+            if (currentSlide < slideCount - 3) {
+                const ellipsis2 = document.createElement('span');
+                ellipsis2.className = 'indicator-ellipsis';
+                ellipsis2.textContent = '...';
+                indicatorsContainer.appendChild(ellipsis2);
+            }
+            
+            // Always show last slide indicator
+            createIndicator(slideCount - 1, indicatorsContainer);
+        }
+        
+        // Add indicators after controls
+        const heroControls = heroSection.querySelector('.hero-controls');
+        heroSection.insertBefore(indicatorsContainer, heroControls.nextSibling);
+        
+        // Update indicators reference
+        indicators = document.querySelectorAll('.indicator');
+    }
+    
+    // Helper function to create indicator
+    function createIndicator(index, container) {
+        const indicator = document.createElement('span');
+        indicator.className = `indicator ${index === currentSlide ? 'active' : ''}`;
+        indicator.dataset.index = index;
+        
+        // Add click event listener
+        indicator.addEventListener('click', function() {
+            stopSlider();
+            showSlide(parseInt(this.dataset.index));
+            startSlider();
+        });
+        
+        container.appendChild(indicator);
     }
     
     function initSlider() {
@@ -271,6 +422,11 @@ document.addEventListener('DOMContentLoaded', function() {
                 indicator.classList.add('active');
             }
         });
+        
+        // Refresh indicators if we're showing limited indicators
+        if (heroSlides.length > 9) {
+            updateHeroIndicators();
+        }
     }
     
     function nextSlide() {

@@ -6,11 +6,11 @@ const langData_en = {
     
     // Hero section
     hero_title: 'Heated Rivalry',
-    hero_subtitle_1: 'I\'ll Believe in Anything',
-    hero_subtitle_2: 'You Deserve Sunshine',
-    hero_subtitle_3: 'We Didn\'t Even Kiss',
-    hero_subtitle_4: 'I Love You So Much',
-    hero_subtitle_5: 'Wish You Were Here',
+    hero_subtitle_1: '<em>I\'ll Believe in Anything</em>',
+    hero_subtitle_2: '<em>You Deserve Sunshine</em>',
+    hero_subtitle_3: '<em>We Didn\'t Even Kiss</em>',
+    hero_subtitle_4: '<em>I Love You So Much</em>',
+    hero_subtitle_5: '<em>Wish You Were Here</em>',
     
     // Gallery filters
     filter_all: 'All',
